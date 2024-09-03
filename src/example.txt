@@ -1,4 +1,7 @@
-// Example of usage:
+// Example Usage:
+
+// Creating an LLM instance
+var llm = new LLM();
 
 // Creating a new ExplicitKnowledgeUnit
 var knowledgeUnit = new ExplicitKnowledgeUnit(
@@ -20,6 +23,22 @@ var shardContext = new ShardContext({
 // Creating a new ExplicitKnowledgeShard
 var explicitShard = new ExplicitKnowledgeShard(shardContext, [knowledgeUnit]);
 
-// Creating a new DomainDatabase
-var domainDatabase = new DomainDatabase([explicitShard], []);
-```
+// Creating a new ImplicitKnowledgeUnit
+var implicitUnit = new ImplicitKnowledgeUnit("Quantum entanglement involves particles sharing states.", ["Initial observation"]);
+
+// Creating a new ImplicitKnowledgeShard
+var implicitShard = new ImplicitKnowledgeShard(shardContext, [implicitUnit]);
+
+// Creating a DomainDatabase and adding shards
+var domainDatabase = new DomainDatabase();
+domainDatabase.addExplicitShard(explicitShard);
+domainDatabase.addImplicitShard(implicitShard);
+
+// Creating a DomainSpecificInferenceEngine instance
+var inferenceEngine = new DomainSpecificInferenceEngine(llm);
+
+// Performing inference on the implicit shard
+inferenceEngine.performInference(implicitShard);
+
+// Displaying all inference histories from the shard
+console.log(inferenceEngine.getInferenceHistories(implicitShard));
