@@ -1,0 +1,25 @@
+// Example of usage:
+
+// Creating a new ExplicitKnowledgeUnit
+var knowledgeUnit = new ExplicitKnowledgeUnit(
+    "Quantum mechanics is a fundamental theory in physics.",
+    "https://example.com/quantum-mechanics",
+    "2024-09-03",
+    "John Doe"
+);
+
+// Creating a new ShardContext
+var shardContext = new ShardContext({
+    knowledgeClass: "Physics",
+    geographicalLocation: "Global",
+    temporalContext: "21st Century",
+    scientificDomain: "Quantum Physics",
+    shardName: "Quantum Theory Shard"
+});
+
+// Creating a new ExplicitKnowledgeShard
+var explicitShard = new ExplicitKnowledgeShard(shardContext, [knowledgeUnit]);
+
+// Creating a new DomainDatabase
+var domainDatabase = new DomainDatabase([explicitShard], []);
+```
