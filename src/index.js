@@ -1,56 +1,4 @@
-// Simulated LLM class to perform simple inferences
-function LLM() {
-    // Simulate inference by combining input text
-    this.infer = function (knowledgeText, inferenceHistory) {
-        return `Inferred from: ${knowledgeText}\nHistory: ${inferenceHistory.join(", ")}`;
-    };
-}
-
-// ExplicitKnowledgeUnit class with methods
-function ExplicitKnowledgeUnit(knowledgeText, sourceUrl, sourceDate, author) {
-    this.knowledgeText = knowledgeText;
-    this.sourceUrl = sourceUrl;
-    this.sourceDate = sourceDate;
-    this.author = author;
-
-    // Method to get a summary of the knowledge
-    this.getSummary = function () {
-        return this.knowledgeText.slice(0, 50) + '...';
-    };
-
-    // Method to display source information
-    this.getSourceInfo = function () {
-        return `Source: ${this.sourceUrl}, Date: ${this.sourceDate}, Author: ${this.author}`;
-    };
-
-    // Method to update knowledge text
-    this.updateKnowledge = function (newText) {
-        this.knowledgeText = newText;
-    };
-}
-
-// ImplicitKnowledgeUnit class with methods
-function ImplicitKnowledgeUnit(knowledgeText, inferenceHistory) {
-    this.knowledgeText = knowledgeText;
-    this.inferenceHistory = inferenceHistory || []; // Default to empty array if not provided
-
-    // Method to add inference to history
-    this.addInference = function (inference) {
-        this.inferenceHistory.push(inference);
-    };
-
-    // Method to get a summary of the knowledge
-    this.getSummary = function () {
-        return this.knowledgeText.slice(0, 50) + '...';
-    };
-
-    // Method to update knowledge text
-    this.updateKnowledge = function (newText) {
-        this.knowledgeText = newText;
-    };
-}
-
-// ShardContext class with methods
+// ShardContext Class
 function ShardContext(options) {
     this.knowledgeClass = options.knowledgeClass;
     this.geographicalLocation = options.geographicalLocation;
@@ -78,10 +26,58 @@ function ShardContext(options) {
     };
 }
 
-// ExplicitKnowledgeShard class with methods
+// ExplicitKnowledgeUnit Class
+function ExplicitKnowledgeUnit(knowledgeText, sourceUrl, date, author) {
+    this.knowledgeText = knowledgeText;
+    this.sourceUrl = sourceUrl;
+    this.date = date;
+    this.author = author;
+
+    // Method to get a summary of the knowledge unit
+    this.getSummary = function () {
+        return this.knowledgeText.slice(0, 100) + '...';
+    };
+
+    // Method to get source information
+    this.getSourceInfo = function () {
+        return {
+            sourceUrl: this.sourceUrl,
+            date: this.date,
+            author: this.author
+        };
+    };
+
+    // Method to update the knowledge text
+    this.updateKnowledge = function (newKnowledgeText) {
+        this.knowledgeText = newKnowledgeText;
+    };
+}
+
+// ImplicitKnowledgeUnit Class
+function ImplicitKnowledgeUnit(knowledgeText, inferenceHistory) {
+    this.knowledgeText = knowledgeText;
+    this.inferenceHistory = inferenceHistory || [];
+
+    // Method to get a summary of the knowledge unit
+    this.getSummary = function () {
+        return this.knowledgeText.slice(0, 100) + '...';
+    };
+
+    // Method to add an inference to the history
+    this.addInference = function (inference) {
+        this.inferenceHistory.push(inference);
+    };
+
+    // Method to update the knowledge text
+    this.updateKnowledge = function (newKnowledgeText) {
+        this.knowledgeText = newKnowledgeText;
+    };
+}
+
+// ExplicitKnowledgeShard Class
 function ExplicitKnowledgeShard(shardContext, explicitKnowledgeUnits) {
     this.shardContext = shardContext; // ShardContext object
-    this.explicitKnowledgeUnits = explicitKnowledgeUnits; // Array of ExplicitKnowledgeUnit objects
+    this.explicitKnowledgeUnits = explicitKnowledgeUnits || []; // Array of ExplicitKnowledgeUnit objects
 
     // Method to add a new ExplicitKnowledgeUnit
     this.addKnowledgeUnit = function (knowledgeUnit) {
@@ -99,10 +95,10 @@ function ExplicitKnowledgeShard(shardContext, explicitKnowledgeUnits) {
     };
 }
 
-// ImplicitKnowledgeShard class with methods
+// ImplicitKnowledgeShard Class
 function ImplicitKnowledgeShard(shardContext, implicitKnowledgeUnits) {
     this.shardContext = shardContext; // ShardContext object
-    this.implicitKnowledgeUnits = implicitKnowledgeUnits; // Array of ImplicitKnowledgeUnit objects
+    this.implicitKnowledgeUnits = implicitKnowledgeUnits || []; // Array of ImplicitKnowledgeUnit objects
 
     // Method to add a new ImplicitKnowledgeUnit
     this.addKnowledgeUnit = function (knowledgeUnit) {
@@ -114,58 +110,51 @@ function ImplicitKnowledgeShard(shardContext, implicitKnowledgeUnits) {
         return this.implicitKnowledgeUnits.map(unit => unit.getSummary());
     };
 
-    // Method to find knowledge with a specific keyword
-    this.findKnowledgeByKeyword = function (keyword) {
-        return this.implicitKnowledgeUnits.filter(unit => unit.knowledgeText.includes(keyword));
+    // Method to find knowledge by inference
+    this.findKnowledgeByInference = function (inference) {
+        return this.implicitKnowledgeUnits.filter(unit => unit.inferenceHistory.includes(inference));
     };
 }
 
-// DomainDatabase class with methods
+// DomainDatabase Class
 function DomainDatabase() {
-    this.explicitShards = []; // Array of ExplicitKnowledgeShard objects
-    this.implicitShards = []; // Array of ImplicitKnowledgeShard objects
+    this.explicitShards = [];
+    this.implicitShards = [];
 
     // Method to add an ExplicitKnowledgeShard
-    this.addExplicitShard = function (explicitShard) {
-        this.explicitShards.push(explicitShard);
+    this.addExplicitShard = function (shard) {
+        this.explicitShards.push(shard);
     };
 
     // Method to add an ImplicitKnowledgeShard
-    this.addImplicitShard = function (implicitShard) {
-        this.implicitShards.push(implicitShard);
+    this.addImplicitShard = function (shard) {
+        this.implicitShards.push(shard);
     };
 
-    // Method to find shard by name
+    // Method to find a shard by name
     this.findShardByName = function (shardName) {
-        return this.explicitShards.concat(this.implicitShards).find(shard => shard.shardContext.shardName === shardName);
-    };
+        let foundShard = this.explicitShards.find(shard => shard.shardContext.shardName === shardName);
+        if (foundShard) return foundShard;
 
-    // Method to list all shards
-    this.listAllShards = function () {
-        return this.explicitShards.concat(this.implicitShards).map(shard => shard.shardContext.shardName);
+        foundShard = this.implicitShards.find(shard => shard.shardContext.shardName === shardName);
+        return foundShard;
     };
 }
 
-// DomainSpecificInferenceEngine class with methods
+// LLM Class
+function LLM() {
+    // Simulate inference by combining input text
+    this.infer = function (knowledgeText, inferenceHistory) {
+        return `Inferred from: ${knowledgeText}\nHistory: ${inferenceHistory.join(", ")}`;
+    };
+}
+
+// DomainSpecificInferenceEngine Class
 function DomainSpecificInferenceEngine(llm) {
-    this.llm = llm; // Instance of LLM class
+    this.llm = llm;
 
-    // Method to perform inference on a shard
-    this.performInference = function (shard) {
-        shard.implicitKnowledgeUnits.forEach(unit => {
-            const newInference = this.llm.infer(unit.knowledgeText, unit.inferenceHistory);
-            unit.addInference(newInference);
-        });
-    };
-
-    // Method to add new inference rules (just a placeholder here)
-    this.addInferenceRule = function (rule) {
-        // Implementation of adding new inference rules
-        console.log(`Adding new inference rule: ${rule}`);
-    };
-
-    // Method to get all inference histories from a shard
-    this.getInferenceHistories = function (shard) {
-        return shard.implicitKnowledgeUnits.map(unit => unit.inferenceHistory);
+    // Method to perform inference
+    this.performInference = function (knowledgeText, inferenceHistory) {
+        return this.llm.infer(knowledgeText, inferenceHistory);
     };
 }
