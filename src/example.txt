@@ -1,44 +1,48 @@
-// Example Usage:
 
-// Creating an LLM instance
-var llm = new LLM();
+// Example usage:
 
-// Creating a new ExplicitKnowledgeUnit
-var knowledgeUnit = new ExplicitKnowledgeUnit(
-    "Quantum mechanics is a fundamental theory in physics.",
-    "https://example.com/quantum-mechanics",
-    "2024-09-03",
-    "John Doe"
-);
-
-// Creating a new ShardContext
+// Create a ShardContext
 var shardContext = new ShardContext({
-    knowledgeClass: "Physics",
-    geographicalLocation: "Global",
-    temporalContext: "21st Century",
-    scientificDomain: "Quantum Physics",
-    shardName: "Quantum Theory Shard"
+    knowledgeClass: 'HistoricalEvent',
+    geographicalLocation: 'France',
+    temporalContext: '1789',
+    scientificDomain: 'History',
+    shortDescription: 'French Revolution',
+    shardName: 'FrenchRevolutionShard'
 });
 
-// Creating a new ExplicitKnowledgeShard
-var explicitShard = new ExplicitKnowledgeShard(shardContext, [knowledgeUnit]);
+// Create an ExplicitKnowledgeUnit
+var explicitUnit = new ExplicitKnowledgeUnit(
+    'The French Revolution began in 1789 and led to the rise of Napoleon Bonaparte.',
+    'https://example.com/french-revolution',
+    '2023-10-10',
+    'John Doe'
+);
 
-// Creating a new ImplicitKnowledgeUnit
-var implicitUnit = new ImplicitKnowledgeUnit("Quantum entanglement involves particles sharing states.", ["Initial observation"]);
+// Create an ExplicitKnowledgeShard
+var explicitShard = new ExplicitKnowledgeShard(shardContext);
+explicitShard.addKnowledgeUnit(explicitUnit);
 
-// Creating a new ImplicitKnowledgeShard
-var implicitShard = new ImplicitKnowledgeShard(shardContext, [implicitUnit]);
+// Create a DomainDatabase
+var domainDB = new DomainDatabase();
+domainDB.addExplicitShard(explicitShard);
 
-// Creating a DomainDatabase and adding shards
-var domainDatabase = new DomainDatabase();
-domainDatabase.addExplicitShard(explicitShard);
-domainDatabase.addImplicitShard(implicitShard);
+// Create an LLM instance
+var llm = new LLM();
 
-// Creating a DomainSpecificInferenceEngine instance
+// Create a DomainSpecificInferenceEngine
 var inferenceEngine = new DomainSpecificInferenceEngine(llm);
 
-// Performing inference on the implicit shard
-inferenceEngine.performInference(implicitShard);
+// Perform inference
+var implicitKnowledgeText = inferenceEngine.performInference(explicitUnit.knowledgeText, []);
+var implicitUnit = new ImplicitKnowledgeUnit(implicitKnowledgeText);
+implicitUnit.addInference('Inference about historical impact');
 
-// Displaying all inference histories from the shard
-console.log(inferenceEngine.getInferenceHistories(implicitShard));
+// Create an ImplicitKnowledgeShard
+var implicitShard = new ImplicitKnowledgeShard(shardContext);
+implicitShard.addKnowledgeUnit(implicitUnit);
+domainDB.addImplicitShard(implicitShard);
+
+// Find a shard by name
+var foundShard = domainDB.findShardByName('FrenchRevolutionShard');
+console.log(foundShard.getKnowledgeSummaries());
